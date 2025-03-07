@@ -29,6 +29,11 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  launcher_name: ^1.0.2
+
+launcher_name:
+  default: "Budget"
+  ar: "ميزانية"
 
 flutter:
   uses-material-design: true
