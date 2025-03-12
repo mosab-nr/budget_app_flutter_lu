@@ -12,7 +12,20 @@
           "package_name": "com.mosababumoammar.budget_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "688150946619-u8atq06gk9b4abt8fpd3510ob8f08glq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mosababumoammar.budget_app",
+            "certificate_hash": "b1ee3a059d23bed374b4247a9ed75107dad8c3b4"
+          }
+        },
+        {
+          "client_id": "688150946619-dfj4sgqf9l5t0t4ca2rg26v8395o6tn9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAa0XfKEQsGHcFFJc48AF4SKrfcxUP9Vdo"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "688150946619-dfj4sgqf9l5t0t4ca2rg26v8395o6tn9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "688150946619-2o4oi8qko2ij958mv97j6vr07bio1t81.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mosababumoammar.budgetApp"
+              }
+            }
+          ]
         }
       }
     }
