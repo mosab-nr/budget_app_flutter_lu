@@ -5,6 +5,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+bool isLoading = true;
+
 class ExpenseViewMobile extends HookConsumerWidget {
   const ExpenseViewMobile({super.key});
 
@@ -12,6 +14,12 @@ class ExpenseViewMobile extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModelProvider = ref.watch(viewModel);
     double deviceWidth = MediaQuery.of(context).size.width;
+
+    if (isLoading == true) {
+      viewModelProvider.expensesStream();
+      viewModelProvider.incomesStream();
+      isLoading = false;
+    }
 
     int totalExpense = 0;
     int totalIncome = 0;
@@ -109,7 +117,7 @@ class ExpenseViewMobile extends HookConsumerWidget {
           actions: [
             IconButton(
               onPressed: () async {
-                // TODO: Reset function
+                viewModelProvider.reset();
               },
               icon: Icon(Icons.refresh),
             ),
@@ -133,6 +141,7 @@ class ExpenseViewMobile extends HookConsumerWidget {
                     children: [
                       Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Poppins(
                             text: "Budget Left",
@@ -195,7 +204,7 @@ class ExpenseViewMobile extends HookConsumerWidget {
                   width: 155.0,
                   child: MaterialButton(
                     onPressed: () async {
-
+                      await viewModelProvider.addExpense(context);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -215,7 +224,121 @@ class ExpenseViewMobile extends HookConsumerWidget {
                     ),
                   ),
                 ),
+                SizedBox(width: 10.0),
+                //Add income
+                SizedBox(
+                  height: 40.0,
+                  width: 155.0,
+                  child: MaterialButton(
+                    onPressed: () async {
+                      await viewModelProvider.addIncome(context);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Icon(Icons.add, color: Colors.white, size: 15.0),
+                        OpenSans(
+                          text: "Add Income",
+                          size: 14.0,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                    splashColor: Colors.grey,
+                    color: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                  ),
+                ),
               ],
+            ),
+            SizedBox(height: 30.0),
+            Padding(
+              padding: EdgeInsets.all(10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  //Expense List
+                  Column(
+                    children: [
+                      OpenSans(text: "Expenses", size: 15.0),
+                      Container(
+                        padding: EdgeInsets.all(7.0),
+                        height: 210.0,
+                        width: 180.0,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                          border: Border.all(width: 1.0, color: Colors.black),
+                        ),
+                        child: ListView.builder(
+                          itemCount: viewModelProvider.expensesAmount.length,
+                          itemBuilder: (context, index) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Poppins(
+                                  text: viewModelProvider.expensesName[index],
+                                  size: 12.0,
+                                ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Poppins(
+                                    text:
+                                        viewModelProvider.expensesAmount[index],
+                                    size: 12.0,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  //Income list
+                  Column(
+                    children: [
+                      OpenSans(
+                        text: "Incomes",
+                        size: 15.0,
+                        color: Colors.black,
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(7.0),
+                        height: 210.0,
+                        width: 180.0,
+                        decoration: BoxDecoration(
+                          border: Border.all(width: 1.0, color: Colors.black),
+                          borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                        ),
+                        child: ListView.builder(
+                          itemCount: viewModelProvider.incomesAmount.length,
+                          itemBuilder: (context, index) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Poppins(
+                                  text: viewModelProvider.incomesName[index],
+                                  size: 12.0,
+                                ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Poppins(
+                                    text:
+                                        viewModelProvider.incomesAmount[index],
+                                    size: 12.0,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
