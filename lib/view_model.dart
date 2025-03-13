@@ -6,9 +6,14 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 
+import 'models.dart';
+
 final viewModel = ChangeNotifierProvider.autoDispose<ViewModel>(
   (ref) => ViewModel(),
 );
+final authStateProvider = StreamProvider<User?>((ref) {
+  return ref.read(viewModel).authStateChange;
+});
 
 class ViewModel extends ChangeNotifier {
   final _auth = FirebaseAuth.instance;
@@ -16,29 +21,46 @@ class ViewModel extends ChangeNotifier {
     "users",
   );
 
-  bool isSignedIn = false;
+  // bool isSignedIn = false;
   bool isObscure = true;
   var logger = Logger();
 
-  List expensesName = [];
-  List expensesAmount = [];
-  List incomesName = [];
-  List incomesAmount = [];
+  int totalExpense = 0;
+  int totalIncome = 0;
+  int budgetLeft = 0;
+
+  List<Models> expenses = [];
+  List<Models> incomes = [];
+
+  Stream<User?> get authStateChange => _auth.authStateChanges();
 
   //Check if Signed In
-  Future<void> isLoggedIn() async {
-    await _auth.authStateChanges().listen((User? user) {
-      if (user == null) {
-        isSignedIn = false;
-      } else {
-        isSignedIn = true;
-      }
-    });
-    notifyListeners();
-  }
+  // Future<void> isLoggedIn() async {
+  //   await _auth.authStateChanges().listen((User? user) {
+  //     if (user == null) {
+  //       isSignedIn = false;
+  //     } else {
+  //       isSignedIn = true;
+  //     }
+  //   });
+  //   notifyListeners();
+  // }
 
   toggleObscure() {
     isObscure = !isObscure;
+    notifyListeners();
+  }
+
+  void calculate() {
+    totalExpense = 0;
+    totalIncome = 0;
+    for (int i = 0; i < expenses.length; i++) {
+      totalExpense = totalExpense + int.parse(expenses[i].amount);
+    }
+    for (int i = 0; i < incomes.length; i++) {
+      totalIncome = totalIncome + int.parse(incomes[i].amount);
+    }
+    budgetLeft = totalIncome - totalExpense;
     notifyListeners();
   }
 
@@ -284,13 +306,20 @@ class ViewModel extends ChangeNotifier {
             .doc(_auth.currentUser!.uid)
             .collection("expenses")
             .snapshots()) {
-      expensesAmount = [];
-      expensesName = [];
-      for (var expense in snapshot.docs) {
-        expensesName.add(expense.data()['name']);
-        expensesAmount.add(expense.data()['amount']);
-        notifyListeners();
-      }
+      expenses = [];
+      snapshot.docs.forEach((element) {
+        expenses.add(Models.fromJsom(element.data()));
+      });
+      logger.d("Expense Models ${expenses.length}");
+      notifyListeners();
+      // expensesAmount = [];
+      // expensesName = [];
+      // for (var expense in snapshot.docs) {
+      //   expensesName.add(expense.data()['name']);
+      //   expensesAmount.add(expense.data()['amount']);
+      //   notifyListeners();
+      // }
+      calculate();
     }
   }
 
@@ -300,13 +329,19 @@ class ViewModel extends ChangeNotifier {
             .doc(_auth.currentUser!.uid)
             .collection("incomes")
             .snapshots()) {
-      incomesAmount = [];
-      incomesName = [];
-      for (var incomes in snapshot.docs) {
-        incomesName.add(incomes.data()['name']);
-        incomesAmount.add(incomes.data()['amount']);
-        notifyListeners();
-      }
+      incomes = [];
+      snapshot.docs.forEach((element) {
+        incomes.add(Models.fromJsom(element.data()));
+      });
+      notifyListeners();
+      // incomesAmount = [];
+      // incomesName = [];
+      // for (var incomes in snapshot.docs) {
+      //   incomesName.add(incomes.data()['name']);
+      //   incomesAmount.add(incomes.data()['amount']);
+      //   notifyListeners();
+      // }
+      calculate();
     }
   }
 
