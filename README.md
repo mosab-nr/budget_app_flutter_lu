@@ -20,7 +20,7 @@ A budget calculator application built with Flutter, utilizing Firebase for backe
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/your-username/budget_calculator.git
+    git clone https://github.com/mosab-nr/budget_calculator.git
     cd budget_calculator
     ```
 
